@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#032BA6">
+  <meta name="description" content="A little tap. A big adventure. Take Medy through the Medsky skies in this one-tap flying game.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Medy Skyhop">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Medy Skyhop — A Medsky adventure</title>
+  <link rel="icon" href="./assets/app-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="preload" href="./assets/ExpoArabic-Bold.otf" as="font" type="font/otf" crossorigin>
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./destinations.css">
+  <link rel="stylesheet" href="./install.css">
+</head>
+<body>
+  <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-plane" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4 20-7ZM11 13l5-5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-7-7 7 7-7 7"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path d="m11 4-6 5H2v6h3l6 5V4Zm5 5 6 6m0-6-6 6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M7 3h10v6a5 5 0 0 1-10 0V3Zm0 2H3v3a4 4 0 0 0 5 4m9-7h4v3a4 4 0 0 1-5 4M12 14v6m-4 1h8"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m12 7 1.5 3.5L17 12l-3.5 1.5L12 17l-1.5-3.5L7 12l3.5-1.5L12 7Z"/></symbol>
+    <symbol id="i-tap" viewBox="0 0 24 24"><path d="M9 11V5a2 2 0 0 1 4 0v7l2-3 6 3-2 9H9l-6-7 2-2 4 3m-4-9a6 6 0 0 1 12-1"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 16V2m-5 5 5-5 5 5M5 11H3v11h18V11h-2"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v11h-6v-7H9v7H3V10Z"/></symbol>
+  </defs></svg>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Medy Skyhop home"><img src="./assets/medsky-airways-logo-white.svg" alt="Medsky Airways" width="164" height="36"></a>
+    <span class="header-caption">SMALL TAPS. BIG ADVENTURES.</span>
+    <nav class="header-actions" aria-label="Game options">
+      <button id="install-button" class="text-button install-button" aria-haspopup="dialog">Install app</button>
+      <button id="help-button" class="text-button">How to play <span class="help-mark">?</span></button>
+      <button id="sound-button" class="icon-button" aria-label="Mute sound" aria-pressed="true"><svg><use href="#i-sound"/></svg></button>
+    </nav>
+  </header>
+  <main class="flight-deck">
+    <aside class="intro-panel">
+      <div class="eyebrow"><span class="little-line"></span> YOUR NEXT LITTLE ADVENTURE</div>
+      <h1>A little tap.<br>A whole<br><span>lot of sky.</span></h1>
+      <p>Seven cities. Your favorite co-pilot.<br>Find your rhythm, clear the gates,<br>and explore the skies with Medy.</p>
+      <div class="flight-path" aria-hidden="true"><svg viewBox="0 0 240 110"><path d="M7 91C76 113 25 7 102 19s-9 88 59 53c24-12 31-36 57-43"/><path class="path-plane" d="m230 19-6 22-6-9-10-4 22-9Z"/></svg></div>
+      <div class="controls-note"><svg><use href="#i-tap"/></svg><span>Tap to fly.<br><small>Or press <kbd>space</kbd> on desktop.</small></span></div>
+      <div class="edition"><span>01</span> THE MEDSKY ARCADE</div>
+    </aside>
+
+    <section class="game-column" aria-label="Medy Skyhop game">
+      <div class="frame-label"><span><i></i> NOW BOARDING</span><span>MEDY SKYHOP</span></div>
+      <div id="game-stage" class="game-stage" tabindex="0" aria-label="Flight area. Tap, Space or Arrow Up to flap. P to pause.">
+        <canvas id="game-canvas" aria-label="Medy flies through blue and gold airport gates"></canvas>
+        <div id="hud" class="hud" hidden>
+          <div class="hud-score"><small>GATES</small><strong id="score">0</strong></div>
+          <span class="hud-coins"><svg><use href="#i-coin"/></svg><b id="coins">0</b></span>
+          <button id="pause-button" class="icon-button" aria-label="Pause flight"><svg><use href="#i-pause"/></svg></button>
+        </div>
+        <div id="destination-hud" class="destination-hud" hidden>
+          <div><span class="destination-caption">NOW FLYING OVER</span><strong id="destination-name">Malta</strong></div>
+        </div>
+        <div id="ready-screen" class="ready-screen">
+          <div class="game-title"><span class="pill">A MEDSKY ADVENTURE</span><h2>medy<span>skyhop<span class="title-star">✦</span></span></h2><p>Your wings. Your high score.</p></div>
+          <span id="ready-best" class="ready-best">BEST FLIGHT 00</span>
+          <div class="ready-actions">
+            <button id="play-button" class="primary-button" disabled><span>Preparing your flight…</span><svg><use href="#i-arrow"/></svg></button>
+            <p class="tap-hint">Five gates. A new city. Keep exploring.</p>
+          </div>
+        </div>
+        <div id="pause-screen" class="scrim" hidden>
+          <div class="pause-card"><span class="eyebrow">TAKE A BREATHER</span><h2>Holding altitude.</h2><p>Medy will be right here.</p><button id="resume-button" class="primary-button">Keep flying <svg><use href="#i-arrow"/></svg></button><button class="text-button home-button">Back to boarding</button></div>
+        </div>
+        <div id="over-screen" class="scrim" hidden>
+          <div class="boarding-pass"><div class="pass-header"><span>FLIGHT COMPLETE</span><svg><use href="#i-plane"/></svg></div><div class="pass-content"><span id="result-tag" class="result-tag">A LITTLE PRACTICE, A LOT OF SKY</span><h2 id="result-title">One more flight?</h2><p id="result-message">Every great pilot starts with a first flap.</p><div class="result-scores"><div><strong id="result-score">0</strong><span>GATES CLEARED</span></div><div><strong id="result-best">0</strong><span>PERSONAL BEST</span></div></div><div class="coin-receipt"><svg><use href="#i-coin"/></svg><span><b id="result-coins">0</b> sky coins collected</span></div><p id="result-destination" class="result-destination">Flying over Malta</p></div><div class="pass-tear"></div><div class="pass-actions"><button id="retry-button" class="primary-button">Fly again <svg><use href="#i-arrow"/></svg></button><div class="result-secondary"><button id="share-button" class="text-button"><svg><use href="#i-share"/></svg> Share score</button><button class="text-button home-button"><svg><use href="#i-home"/></svg> Home</button></div><p id="share-status" class="share-status" role="status"></p></div></div>
+        </div>
+        <div id="loading-error" class="scrim" hidden><div class="pause-card"><h2>Flight delayed.</h2><p>The game couldn’t finish loading. Please refresh to try again.</p><button id="reload-button" class="primary-button">Try again</button></div></div>
+        <span class="runway-caption" aria-hidden="true">THE SKY IS YOUR PLAYGROUND</span>
+      </div>
+      <div class="under-frame"><span>MADE FOR A LITTLE ESCAPE</span><span>✦ &nbsp; FLY WITH MEDY</span></div>
+    </section>
+
+    <aside class="record-panel">
+      <div class="record-heading"><span>YOUR FLIGHT LOG</span><svg><use href="#i-plane"/></svg></div>
+      <div class="best-record"><svg><use href="#i-trophy"/></svg><span>Personal best</span><strong id="personal-best">00</strong></div>
+      <div class="record-row"><span>Flights taken</span><b id="total-flights">0</b></div>
+      <div class="record-row"><span>Sky coins</span><b id="total-coins">0</b></div>
+      <div class="rank"><span class="rank-symbol">✦</span><div><small>YOUR PILOT STATUS</small><b id="pilot-rank">Ready for takeoff</b></div></div>
+      <p class="saved-note">Saved on this device. Your next<br>personal best is one flight away.</p>
+      <div class="route-card"><span class="eyebrow">YOUR MEDSKY JOURNEY</span><ol id="city-list" class="city-list" aria-label="Game destinations"></ol><p>Clear five gates to discover a new skyline.<br>Start in Malta. See how far you can fly.</p></div>
+      <span class="just-play">Play here. Or take Medy to your home screen.</span>
+    </aside>
+  </main>
+  <footer class="site-footer"><span>MEDSKY AIRWAYS <i>×</i> A SKY FULL OF POSSIBILITIES</span><span>Made for the joy of flying.</span></footer>
+  <dialog id="help-dialog"><button id="close-help" class="icon-button dialog-close" aria-label="Close instructions"><svg><use href="#i-close"/></svg></button><span class="eyebrow">WELCOME ABOARD</span><h2>A tap is all it takes.</h2><p>Tap anywhere in the flight area to give Medy a lift. Keep a steady rhythm to fly through the openings in the blue gates.</p><ul><li><b>Clear a gate</b> to earn one point.</li><li><b>Collect gold coins</b> for your flight log. These are game coins with no cash or loyalty value.</li><li><b>Explore seven destinations:</b> Malta, Rome, Milan, Athens, Madrid, Düsseldorf, and Paris. Start in Malta; every five gates takes you to the next city.</li><li><b>Find your rhythm:</b> speed and narrow openings stay the same throughout your flight. Gate heights change randomly, so every tap counts. One collision ends the flight.</li><li><b>On desktop:</b> Space or ↑ to flap. P or Escape to pause.</li></ul><div class="install-note"><b>Keep Medy on your home screen</b><p>On iPhone, use Safari’s Share menu → Add to Home Screen. On Android, open your browser menu → Add to Home screen.</p></div><button id="got-it-button" class="primary-button">Ready for takeoff <svg><use href="#i-arrow"/></svg></button></dialog>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+  <dialog id="install-dialog" aria-labelledby="install-title">
+    <button id="close-install" class="icon-button dialog-close" aria-label="Close app installation"><svg><use href="#i-close"/></svg></button>
+    <div class="install-heading"><img src="./assets/icon-192.png" alt="" width="64" height="64"><div><span class="eyebrow">READY WHEN YOU ARE</span><h2 id="install-title">Take Medy with you.</h2></div></div>
+    <p>Add Medy Skyhop to your home screen and launch it like an app. Share the same game link with your friends.</p>
+    <button id="native-install-button" class="primary-button" hidden>Install on this device</button>
+    <p id="install-status" class="install-status" role="status"></p>
+    <div class="install-method"><h3>iPhone / iPad</h3><ol><li>Open this link in <b>Safari</b>.</li><li>Open the <b>Share</b> menu and choose <b>Add to Home Screen</b>.</li><li>Leave <b>Open as Web App</b> on if shown, then tap <b>Add</b>.</li></ol></div>
+    <div class="install-method"><h3>Android</h3><p>Open this link in <b>Chrome</b>. Tap <b>Install on this device</b> above when available, or use Chrome’s menu → <b>Add to home screen</b> → <b>Install</b>.</p></div>
+    <p class="install-browser-note">Opened from WhatsApp or another app? Use its menu to open the link in Safari or Chrome first.</p>
+    <p id="offline-status" class="offline-status">Preparing offline play. Keep the game open with an internet connection for a moment.</p>
+    <button id="done-install" class="text-button install-done">Back to the game <svg><use href="#i-arrow"/></svg></button>
+  </dialog>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

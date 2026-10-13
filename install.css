@@ -1,0 +1,20 @@
+.header-actions .install-button{border:1px solid #ffffff70;border-radius:8px;white-space:nowrap;padding:9px 12px}
+.header-actions .install-button:hover{background:#ffffff20}
+#install-dialog{width:min(480px,calc(100vw - 24px));max-height:calc(100svh - 32px);overflow-y:auto;overscroll-behavior:contain;padding:34px 26px 20px}
+.install-heading{display:flex;align-items:center;gap:14px;margin-top:12px}
+.install-heading img{border-radius:14px;flex-shrink:0;border:1px solid var(--line)}
+.install-heading h2{font-size:23px;line-height:1.15;margin:9px 0 0}
+.install-heading .eyebrow{font-size:8px}
+.install-method{background:var(--pearl);border-radius:12px;padding:14px 17px;margin:12px 0}
+.install-method h3{font-size:13px;margin:0 0 7px}
+.install-method ol{padding-left:18px;margin:0}
+.install-method li{margin:3px 0}
+.install-method p{margin:0}
+.install-browser-note{font-size:11px;color:var(--muted)}
+.offline-status{border-left:3px solid var(--gold);padding:4px 12px;font-size:11px}
+.install-done{width:100%;margin-top:6px;min-height:44px}
+.install-status:empty{display:none}
+#native-install-button{margin:18px 0 12px}
+@media(max-width:640px){.header-actions{gap:6px}.header-actions .install-button{padding:8px;font-size:10px}.site-header{padding-left:14px;padding-right:14px}.brand img{width:115px}}
+@media(max-width:360px){.header-actions{gap:3px}.brand img{width:97px}.site-header{padding-left:10px;padding-right:10px}.header-actions .text-button{font-size:9px}.install-heading h2{font-size:20px}}
+@media(display-mode:standalone){#install-button{display:none}}
