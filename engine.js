@@ -10,7 +10,8 @@ const SPACING = 245;
 const FIRST_X = WORLD.width + 140;
 const MIN_GAP_Y = 200;
 const MAX_GAP_Y = 490;
-export const CLASSIC_SETTINGS = Object.freeze({ gravity: 1312.5, impulse: -393.75, speed: 175, gap: 146 });
+const MAX_GAP_CHANGE = 140;
+export const CLASSIC_SETTINGS = Object.freeze({ gravity: 1050, impulse: -350, speed: 150, gap: 190 });
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -70,7 +71,12 @@ function addObstacle(game, x, first = false) {
   const gap = game.settings.gap;
   const rawRandom = game._random();
   const random = Number.isFinite(rawRandom) ? clamp(rawRandom, 0, 1) : 0.5;
-  const gapY = first ? BIRD_Y : MIN_GAP_Y + random * (MAX_GAP_Y - MIN_GAP_Y);
+  const previousGapY = game.obstacles.at(-1)?.gapY ?? BIRD_Y;
+  const targetGapY = MIN_GAP_Y + random * (MAX_GAP_Y - MIN_GAP_Y);
+  // Keep the next opening reachable without a sudden climb or dive.
+  const gapY = first ? BIRD_Y : clamp(targetGapY,
+    Math.max(MIN_GAP_Y, previousGapY - MAX_GAP_CHANGE),
+    Math.min(MAX_GAP_Y, previousGapY + MAX_GAP_CHANGE));
   game.obstacles.push({
     id: game._nextId++, x, gapY, gap, width: OBSTACLE_WIDTH, passed: false,
     coin: { x: x + OBSTACLE_WIDTH / 2, y: gapY, radius: 12, collected: false },
