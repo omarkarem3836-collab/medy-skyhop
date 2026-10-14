@@ -10,10 +10,20 @@ const SPACING = 245;
 const FIRST_X = WORLD.width + 140;
 const MIN_GAP_Y = 200;
 const MAX_GAP_Y = 490;
-const MAX_GAP_CHANGE = 110;
+const MAX_GAP_CHANGE = 90;
+const WARMUP_HEIGHTS = [335, 350, 320, 350, 335];
+export const GATE_PATTERNS = Object.freeze([
+  { id: 'level', offsets: [0, 0, 0, 0, 0], amplitude: 0 },
+  { id: 'climb', offsets: [1, 0.5, 0, -0.5, -1], amplitude: 80 },
+  { id: 'dive', offsets: [-1, -0.5, 0, 0.5, 1], amplitude: 80 },
+  { id: 'wave', offsets: [0, 1, 0, -1, 0], amplitude: 65 },
+  { id: 'zigzag', offsets: [0, -1, 1, -1, 0], amplitude: 40 },
+  { id: 'arch', offsets: [0, -1, -1.5, -1, 0], amplitude: 55 },
+  { id: 'valley', offsets: [0, 1, 1.5, 1, 0], amplitude: 55 },
+].map(pattern => Object.freeze({ ...pattern, offsets: Object.freeze(pattern.offsets) })));
 export const CLASSIC_SETTINGS = Object.freeze({
   gravity: 1050, impulse: -350, speed: 130, gap: 210,
-  maxSpeed: 200, speedGraceGates: 5, speedPerGate: 2, acceleration: 5,
+  maxSpeed: 260, speedGraceGates: 5, speedPerGate: 4, acceleration: 12,
 });
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -38,13 +48,16 @@ export function resetGame(game) {
   game.events = [];
   game._accumulator = 0;
   game._nextId = 1;
+  game._patternQueue = WARMUP_HEIGHTS.map(gapY => ({ gapY, pattern: 'warmup' }));
+  game._patternBag = [];
+  game._lastPattern = null;
   return game;
 }
 
 export function startGame(game) {
   if (game.state !== 'ready') return false;
   game.state = 'playing';
-  addObstacle(game, FIRST_X, true);
+  addObstacle(game, FIRST_X);
   return true;
 }
 
@@ -70,18 +83,46 @@ export function resumeGame(game) {
   return true;
 }
 
-function addObstacle(game, x, first = false) {
-  const gap = game.settings.gap;
+function randomUnit(game) {
   const rawRandom = game._random();
-  const random = Number.isFinite(rawRandom) ? clamp(rawRandom, 0, 1) : 0.5;
-  const previousGapY = game.obstacles.at(-1)?.gapY ?? BIRD_Y;
-  const targetGapY = MIN_GAP_Y + random * (MAX_GAP_Y - MIN_GAP_Y);
-  // Keep the next opening reachable without a sudden climb or dive.
-  const gapY = first ? BIRD_Y : clamp(targetGapY,
-    Math.max(MIN_GAP_Y, previousGapY - MAX_GAP_CHANGE),
-    Math.min(MAX_GAP_Y, previousGapY + MAX_GAP_CHANGE));
+  return Number.isFinite(rawRandom) ? clamp(rawRandom, 0, 1) : 0.5;
+}
+
+function planPattern(game) {
+  // A shuffled bag gives each flight variety without repeating a block twice.
+  if (!game._patternBag.length) {
+    game._patternBag = [...GATE_PATTERNS];
+    for (let i = game._patternBag.length - 1; i > 0; i -= 1) {
+      const j = Math.min(i, Math.floor(randomUnit(game) * (i + 1)));
+      [game._patternBag[i], game._patternBag[j]] = [game._patternBag[j], game._patternBag[i]];
+    }
+    if (game._patternBag.at(-1).id === game._lastPattern) {
+      const last = game._patternBag.length - 1;
+      [game._patternBag[0], game._patternBag[last]] = [game._patternBag[last], game._patternBag[0]];
+    }
+  }
+  const pattern = game._patternBag.pop();
+  const amplitude = pattern.amplitude * (0.9 + randomUnit(game) * 0.2);
+  const anchor = clamp(BIRD_Y + (randomUnit(game) - 0.5) * 80,
+    MIN_GAP_Y - Math.min(...pattern.offsets) * amplitude,
+    MAX_GAP_Y - Math.max(...pattern.offsets) * amplitude);
+  const heights = pattern.offsets.map(offset => anchor + offset * amplitude);
+  let previousGapY = game.obstacles.at(-1)?.gapY ?? BIRD_Y;
+  // Bridge distant entries before the block, preserving the pattern's shape.
+  while (Math.abs(heights[0] - previousGapY) > MAX_GAP_CHANGE) {
+    previousGapY += Math.sign(heights[0] - previousGapY) * MAX_GAP_CHANGE;
+    game._patternQueue.push({ gapY: previousGapY, pattern: 'transition' });
+  }
+  game._patternQueue.push(...heights.map(gapY => ({ gapY, pattern: pattern.id })));
+  game._lastPattern = pattern.id;
+}
+
+function addObstacle(game, x) {
+  if (!game._patternQueue.length) planPattern(game);
+  const { gapY, pattern } = game._patternQueue.shift();
+  const gap = game.settings.gap;
   game.obstacles.push({
-    id: game._nextId++, x, gapY, gap, width: OBSTACLE_WIDTH, passed: false,
+    id: game._nextId++, x, gapY, gap, pattern, width: OBSTACLE_WIDTH, passed: false,
     coin: { x: x + OBSTACLE_WIDTH / 2, y: gapY, radius: 12, collected: false },
   });
 }
