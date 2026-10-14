@@ -37,7 +37,7 @@ export const CLASSIC_SETTINGS = Object.freeze({
   gravity: 1050, impulse: -350, speed: 130, gap: 168,
   minGap: 142, gapEvery: 10, gapReduction: 7,
   baseMaxSpeed: 260, speedGraceGates: 5, speedPerGate: 4, acceleration: 120,
-  multiplierEvery: 10, multiplierGain: 0.25,
+  multiplierEvery: 10, multiplierGain: 0.25, maxMultiplier: 1.5, maxSpeed: 285,
 });
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -45,14 +45,15 @@ const gateCount = score => Number.isFinite(score)
   ? clamp(Math.floor(score), 0, Number.MAX_SAFE_INTEGER) : 0;
 
 export function speedMultiplierForScore(score) {
-  return 1 + Math.floor(gateCount(score) / CLASSIC_SETTINGS.multiplierEvery)
-    * CLASSIC_SETTINGS.multiplierGain;
+  return Math.min(CLASSIC_SETTINGS.maxMultiplier,
+    1 + Math.floor(gateCount(score) / CLASSIC_SETTINGS.multiplierEvery)
+    * CLASSIC_SETTINGS.multiplierGain);
 }
 
 export function targetSpeedForScore(score) {
   const baseSpeed = Math.min(CLASSIC_SETTINGS.baseMaxSpeed, CLASSIC_SETTINGS.speed
     + Math.max(0, gateCount(score) - CLASSIC_SETTINGS.speedGraceGates) * CLASSIC_SETTINGS.speedPerGate);
-  return baseSpeed * speedMultiplierForScore(score);
+  return Math.min(CLASSIC_SETTINGS.maxSpeed, baseSpeed * speedMultiplierForScore(score));
 }
 
 export function gapForGate(index) {
