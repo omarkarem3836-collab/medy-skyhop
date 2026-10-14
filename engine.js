@@ -21,9 +21,21 @@ export const GATE_PATTERNS = Object.freeze([
   { id: 'zigzag', offsets: [0, -1, 1, -1, 0], amplitude: 40 },
   { id: 'arch', offsets: [0, -1, -1.5, -1, 0], amplitude: 55 },
   { id: 'valley', offsets: [0, 1, 1.5, 1, 0], amplitude: 55 },
+  { id: 'stair-climb', offsets: [1, 1, 0.25, 0.25, -0.5, -0.5, -1], amplitude: 80 },
+  { id: 'stair-dive', offsets: [-1, -1, -0.25, -0.25, 0.5, 0.5, 1], amplitude: 80 },
+  { id: 'double-wave', offsets: [0, -1, 0, 1, 0, -1, 0], amplitude: 65 },
+  { id: 'sawtooth', offsets: [-1, -0.5, 0, 0.5, 1, -1, 0], amplitude: 40 },
+  { id: 'pulse', offsets: [0, -1, 0, -1, 0, 1, 0], amplitude: 70 },
+  { id: 'high-shelf', offsets: [0, -1, -1, -1, 0], amplitude: 80 },
+  { id: 'low-shelf', offsets: [0, 1, 1, 1, 0], amplitude: 80 },
+  { id: 'switchback', offsets: [0, -0.65, 0.45, -0.3, 0.85, 0], amplitude: 55 },
+  { id: 'chicane', offsets: [0, 0.6, -0.6, 0, 0.8, 0], amplitude: 60 },
+  { id: 'crest', offsets: [0, -0.3, -0.9, -1.5, -0.9, -0.3, 0], amplitude: 60 },
+  { id: 'trough', offsets: [0, 0.3, 0.9, 1.5, 0.9, 0.3, 0], amplitude: 60 },
 ].map(pattern => Object.freeze({ ...pattern, offsets: Object.freeze(pattern.offsets) })));
 export const CLASSIC_SETTINGS = Object.freeze({
-  gravity: 1050, impulse: -350, speed: 130, gap: 210,
+  gravity: 1050, impulse: -350, speed: 130, gap: 168,
+  minGap: 142, gapEvery: 10, gapReduction: 7,
   baseMaxSpeed: 260, speedGraceGates: 5, speedPerGate: 4, acceleration: 120,
   multiplierEvery: 10, multiplierGain: 0.25,
 });
@@ -41,6 +53,11 @@ export function targetSpeedForScore(score) {
   const baseSpeed = Math.min(CLASSIC_SETTINGS.baseMaxSpeed, CLASSIC_SETTINGS.speed
     + Math.max(0, gateCount(score) - CLASSIC_SETTINGS.speedGraceGates) * CLASSIC_SETTINGS.speedPerGate);
   return baseSpeed * speedMultiplierForScore(score);
+}
+
+export function gapForGate(index) {
+  return Math.max(CLASSIC_SETTINGS.minGap, CLASSIC_SETTINGS.gap
+    - Math.floor(gateCount(index) / CLASSIC_SETTINGS.gapEvery) * CLASSIC_SETTINGS.gapReduction);
 }
 
 export function createGame({ random = Math.random } = {}) {
@@ -122,7 +139,10 @@ function planPattern(game) {
   const projectedSpeed = targetSpeedForScore(upcomingScore + pattern.offsets.length + 2);
   const heightScale = clamp(400 / projectedSpeed, 0.08, 1);
   const heightChange = MAX_GAP_CHANGE * heightScale;
-  const amplitude = pattern.amplitude * (0.9 + randomUnit(game) * 0.2) * heightScale;
+  const largestStep = Math.max(...pattern.offsets.slice(1)
+    .map((offset, i) => Math.abs(offset - pattern.offsets[i])));
+  const amplitude = Math.min(pattern.amplitude * (0.9 + randomUnit(game) * 0.2) * heightScale,
+    heightChange / Math.max(largestStep, Number.EPSILON));
   const anchor = clamp(BIRD_Y + (randomUnit(game) - 0.5) * 80 * heightScale,
     MIN_GAP_Y - Math.min(...pattern.offsets) * amplitude,
     MAX_GAP_Y - Math.max(...pattern.offsets) * amplitude);
@@ -140,7 +160,8 @@ function planPattern(game) {
 function addObstacle(game, x) {
   if (!game._patternQueue.length) planPattern(game);
   const { gapY, pattern } = game._patternQueue.shift();
-  const gap = game.settings.gap;
+  // The opening is fixed when spawned; visible gates never suddenly shrink.
+  const gap = gapForGate(game._nextId - 1);
   game.obstacles.push({
     id: game._nextId++, x, gapY, gap, pattern, width: OBSTACLE_WIDTH, passed: false,
     coin: { x: x + OBSTACLE_WIDTH / 2, y: gapY, radius: 12, collected: false },
