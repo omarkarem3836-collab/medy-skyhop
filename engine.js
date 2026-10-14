@@ -10,8 +10,11 @@ const SPACING = 245;
 const FIRST_X = WORLD.width + 140;
 const MIN_GAP_Y = 200;
 const MAX_GAP_Y = 490;
-const MAX_GAP_CHANGE = 140;
-export const CLASSIC_SETTINGS = Object.freeze({ gravity: 1050, impulse: -350, speed: 150, gap: 190 });
+const MAX_GAP_CHANGE = 110;
+export const CLASSIC_SETTINGS = Object.freeze({
+  gravity: 1050, impulse: -350, speed: 130, gap: 210,
+  maxSpeed: 200, speedGraceGates: 5, speedPerGate: 2, acceleration: 5,
+});
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -99,7 +102,10 @@ function crash(game, reason, obstacleId) {
 function stepGame(game) {
   const bird = game.bird;
   game.time += STEP;
-  game.speed = game.settings.speed;
+  const targetSpeed = Math.min(game.settings.maxSpeed, game.settings.speed
+    + Math.max(0, game.score - game.settings.speedGraceGates) * game.settings.speedPerGate);
+  // Ease toward the score's pace so clearing a gate never causes a speed jump.
+  game.speed = Math.min(targetSpeed, game.speed + game.settings.acceleration * STEP);
   const travel = game.speed * STEP;
   game.distance += travel;
   bird.y += bird.vy * STEP + 0.5 * game.settings.gravity * STEP * STEP;
