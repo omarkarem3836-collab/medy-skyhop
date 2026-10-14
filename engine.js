@@ -2,6 +2,7 @@
 export const WORLD = Object.freeze({ width: 420, height: 760, groundY: 696 });
 
 const STEP = 1 / 120;
+const MAX_TRAVEL_PER_STEP = 19;
 const BIRD_X = 114;
 const BIRD_Y = 335;
 const BIRD_RADIUS = 17;
@@ -23,10 +24,24 @@ export const GATE_PATTERNS = Object.freeze([
 ].map(pattern => Object.freeze({ ...pattern, offsets: Object.freeze(pattern.offsets) })));
 export const CLASSIC_SETTINGS = Object.freeze({
   gravity: 1050, impulse: -350, speed: 130, gap: 210,
-  maxSpeed: 260, speedGraceGates: 5, speedPerGate: 4, acceleration: 12,
+  baseMaxSpeed: 260, speedGraceGates: 5, speedPerGate: 4, acceleration: 120,
+  multiplierEvery: 10, multiplierGain: 0.25,
 });
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const gateCount = score => Number.isFinite(score)
+  ? clamp(Math.floor(score), 0, Number.MAX_SAFE_INTEGER) : 0;
+
+export function speedMultiplierForScore(score) {
+  return 1 + Math.floor(gateCount(score) / CLASSIC_SETTINGS.multiplierEvery)
+    * CLASSIC_SETTINGS.multiplierGain;
+}
+
+export function targetSpeedForScore(score) {
+  const baseSpeed = Math.min(CLASSIC_SETTINGS.baseMaxSpeed, CLASSIC_SETTINGS.speed
+    + Math.max(0, gateCount(score) - CLASSIC_SETTINGS.speedGraceGates) * CLASSIC_SETTINGS.speedPerGate);
+  return baseSpeed * speedMultiplierForScore(score);
+}
 
 export function createGame({ random = Math.random } = {}) {
   const game = { _random: typeof random === 'function' ? random : Math.random };
@@ -102,15 +117,20 @@ function planPattern(game) {
     }
   }
   const pattern = game._patternBag.pop();
-  const amplitude = pattern.amplitude * (0.9 + randomUnit(game) * 0.2);
-  const anchor = clamp(BIRD_Y + (randomUnit(game) - 0.5) * 80,
+  // Plan for the pace at the end of this upcoming block, including bridges.
+  const upcomingScore = game.score + game.obstacles.filter(gate => !gate.passed).length;
+  const projectedSpeed = targetSpeedForScore(upcomingScore + pattern.offsets.length + 2);
+  const heightScale = clamp(400 / projectedSpeed, 0.08, 1);
+  const heightChange = MAX_GAP_CHANGE * heightScale;
+  const amplitude = pattern.amplitude * (0.9 + randomUnit(game) * 0.2) * heightScale;
+  const anchor = clamp(BIRD_Y + (randomUnit(game) - 0.5) * 80 * heightScale,
     MIN_GAP_Y - Math.min(...pattern.offsets) * amplitude,
     MAX_GAP_Y - Math.max(...pattern.offsets) * amplitude);
   const heights = pattern.offsets.map(offset => anchor + offset * amplitude);
   let previousGapY = game.obstacles.at(-1)?.gapY ?? BIRD_Y;
   // Bridge distant entries before the block, preserving the pattern's shape.
-  while (Math.abs(heights[0] - previousGapY) > MAX_GAP_CHANGE) {
-    previousGapY += Math.sign(heights[0] - previousGapY) * MAX_GAP_CHANGE;
+  while (Math.abs(heights[0] - previousGapY) > heightChange) {
+    previousGapY += Math.sign(heights[0] - previousGapY) * heightChange;
     game._patternQueue.push({ gapY: previousGapY, pattern: 'transition' });
   }
   game._patternQueue.push(...heights.map(gapY => ({ gapY, pattern: pattern.id })));
@@ -140,19 +160,18 @@ function crash(game, reason, obstacleId) {
   game.events.push({ type: 'crash', reason, obstacleId, x: game.bird.x, y: game.bird.y });
 }
 
-function stepGame(game) {
+function stepGame(game, dt) {
   const bird = game.bird;
-  game.time += STEP;
-  const targetSpeed = Math.min(game.settings.maxSpeed, game.settings.speed
-    + Math.max(0, game.score - game.settings.speedGraceGates) * game.settings.speedPerGate);
+  game.time += dt;
+  const targetSpeed = targetSpeedForScore(game.score);
   // Ease toward the score's pace so clearing a gate never causes a speed jump.
-  game.speed = Math.min(targetSpeed, game.speed + game.settings.acceleration * STEP);
-  const travel = game.speed * STEP;
+  game.speed = Math.min(targetSpeed, game.speed + game.settings.acceleration * dt);
+  const travel = game.speed * dt;
   game.distance += travel;
-  bird.y += bird.vy * STEP + 0.5 * game.settings.gravity * STEP * STEP;
-  bird.vy += game.settings.gravity * STEP;
+  bird.y += bird.vy * dt + 0.5 * game.settings.gravity * dt * dt;
+  bird.vy += game.settings.gravity * dt;
   const targetRotation = clamp(bird.vy / 500, -0.42, 1.15);
-  bird.rotation += (targetRotation - bird.rotation) * (1 - Math.exp(-9 * STEP));
+  bird.rotation += (targetRotation - bird.rotation) * (1 - Math.exp(-9 * dt));
 
   for (const obstacle of game.obstacles) {
     obstacle.x -= travel;
@@ -215,7 +234,12 @@ export function updateGame(game, dt) {
   while (game._accumulator + 1e-10 >= STEP && game.state === 'playing') {
     game._accumulator -= STEP;
     if (game._accumulator < 0) game._accumulator = 0;
-    stepGame(game);
+    // Even a very long run must not jump past a complete gate between checks.
+    const subdivisions = Math.max(1, Math.ceil(
+      (game.speed + game.settings.acceleration * STEP) * STEP / MAX_TRAVEL_PER_STEP));
+    for (let i = 0; i < subdivisions && game.state === 'playing'; i += 1) {
+      stepGame(game, STEP / subdivisions);
+    }
   }
   return game;
 }

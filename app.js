@@ -1,4 +1,4 @@
-import {createGame, resetGame, flap, updateGame, pauseGame, resumeGame} from './engine.js';
+import {createGame, resetGame, flap, updateGame, pauseGame, resumeGame, speedMultiplierForScore} from './engine.js';
 import {createRenderer} from './renderer.js';
 import {DESTINATIONS, getJourney} from './destinations.js';
 import {setupInstall} from './install.js';
@@ -93,6 +93,11 @@ function resetFlight() {
   resetGame(game);
   $('share-status').textContent='';
 }
+function renderFlightCounts() {
+  $('score').textContent=game.score;
+  $('coins').textContent=game.coins;
+  $('speed-multiplier').textContent=`SPEED ×${speedMultiplierForScore(game.score).toFixed(2).replace(/\.?0+$/,'')}`;
+}
 function renderState() {
   $('ready-screen').hidden=game.state!=='ready';
   $('hud').hidden=game.state==='ready'||game.state==='over';
@@ -100,8 +105,7 @@ function renderState() {
   $('pause-screen').hidden=game.state!=='paused';
   $('over-screen').hidden=game.state!=='over';
   stage.dataset.state=game.state;
-  $('score').textContent=game.score;
-  $('coins').textContent=game.coins;
+  renderFlightCounts();
   renderJourney();
 }
 function performFlap() {
@@ -216,7 +220,7 @@ try {
         }
         if(event.type==='crash'){sound('crash');renderer.burst(event.x,event.y,'crash');endFlight();}
       }
-      if(game.state==='playing'){$('score').textContent=game.score;$('coins').textContent=game.coins;}
+      if(game.state==='playing')renderFlightCounts();
       renderer.draw(game,dt,{reducedMotion:reducedMotion.matches});
     }
     requestAnimationFrame(frame);

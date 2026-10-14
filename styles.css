@@ -30,3 +30,4 @@
 @media(max-width:640px){.site-header{background:var(--blue)}.game-column{background:var(--airforce)}}
 
 .share-status{font-size:2.5cqw;line-height:1.5;text-align:center;color:var(--muted);margin:8px 0 0}.share-status:empty{display:none}
+.hud-score .speed-label{padding-top:4px;letter-spacing:.4px;color:var(--blue);font-variant-numeric:tabular-nums;white-space:nowrap}
