@@ -2,7 +2,6 @@ import {createGame, resetGame, flap, updateGame, pauseGame, resumeGame, speedMul
 import {createRenderer} from './renderer.js';
 import {DESTINATIONS, getJourney} from './destinations.js';
 import {setupInstall} from './install.js';
-import {setupExpo} from './expo.js';
 
 const $ = id => document.getElementById(id);
 const stage = $('game-stage');
@@ -34,7 +33,6 @@ let audioContext;
 let flightNumber = 0;
 let lastTime = performance.now();
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-let expo;
 
 function unlockAudio() {
   if (!record.sound) return;
@@ -113,10 +111,9 @@ function renderState() {
 function performFlap() {
   if (!loaded || document.querySelector('dialog[open]')) return;
   const starting=game.state==='ready';
-  if(starting && expo?.requestStart()) return;
   unlockAudio();
   if (flap(game)) {
-    if (starting) {ended=false;flightNumber++;record.flights++;saveRecord();renderRecords();$('share-status').textContent='';expo?.begin();}
+    if (starting) {ended=false;flightNumber++;record.flights++;saveRecord();renderRecords();$('share-status').textContent='';}
     sound('flap');renderer.burst(game.bird.x-17,game.bird.y+7,'flap');
     renderState();
   }
@@ -131,7 +128,7 @@ function bankFlight() {
   saveRecord();renderRecords();
   return personalBest;
 }
-function home() {bankFlight();resetFlight();ended=false;renderState();renderRecords();expo?.home();$('play-button').focus({preventScroll:true});}
+function home() {bankFlight();resetFlight();ended=false;renderState();renderRecords();$('play-button').focus({preventScroll:true});}
 function pause() {
   if (pauseGame(game)) {renderState();$('announcer').textContent='Flight paused.';$('resume-button').focus({preventScroll:true});}
 }
@@ -140,9 +137,7 @@ function resume() {
 }
 function endFlight() {
   if (ended) return;
-  const expoBest=expo?.best();
-  const deviceBest=bankFlight();
-  const personalBest=expoBest!==null && expoBest!==undefined ? game.score>expoBest : deviceBest;
+  const personalBest=bankFlight();
   $('result-score').textContent=game.score;
   $('result-best').textContent=record.classic;
   $('result-coins').textContent=game.coins;
@@ -152,7 +147,6 @@ function endFlight() {
   $('result-message').textContent=game.score===0?'Find a gentle tapping rhythm. You’ve got this.':personalBest?'A little higher. A little further. All you.':'There’s always a little more sky to explore.';
   $('announcer').textContent=`Flight complete. ${game.score} gates, ${game.coins} coins. Personal best ${record.classic}.`;
   renderState();
-  expo?.finish(game);
   const currentFlight=flightNumber;
   setTimeout(()=>{if(game.state==='over' && currentFlight===flightNumber)$('retry-button').focus({preventScroll:true});},200);
 }
@@ -191,7 +185,6 @@ $('got-it-button').addEventListener('click',closeHelp);
 $('help-dialog').addEventListener('click',event=>{if(event.target===$('help-dialog')){const box=$('help-dialog').getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)closeHelp();}});
 $('reload-button').addEventListener('click',()=>location.reload());
 setupInstall({onOpen:pause});
-expo=setupExpo({onStart:()=>{performFlap();stage.focus({preventScroll:true});},onPause:pause});
 $('share-button').addEventListener('click',async()=>{
   const sharedFlight=flightNumber;
   const shareStatus=message=>{if(game.state==='over'&&flightNumber===sharedFlight)$('share-status').textContent=message;};
@@ -206,7 +199,6 @@ $('share-button').addEventListener('click',async()=>{
 });
 
 renderRecords();renderSound();renderState();
-expo.home();
 if(!storageAvailable)saveRecord();
 try {
   renderer=await createRenderer($('game-canvas'));
