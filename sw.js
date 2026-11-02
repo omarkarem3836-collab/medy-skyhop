@@ -1,6 +1,6 @@
 // Bump this revision whenever any file in APP_SHELL changes. Each installed
 // worker serves one complete revision until its open game windows are closed.
-const REVISION = '2026-10-14-speed-cap-v8';
+const REVISION = '2026-11-02-expo-flight-v10';
 const SCOPE = new URL(self.registration.scope);
 const ROOT_URL = SCOPE.href;
 const CACHE_PREFIX = `medy-skyhop:${SCOPE.pathname}:shell:`;
@@ -10,6 +10,9 @@ const APP_SHELL = [
   './styles.css',
   './destinations.css',
   './install.css',
+  './expo.css',
+  './expo.js',
+  './expo-store.js',
   './app.js',
   './engine.js',
   './renderer.js',

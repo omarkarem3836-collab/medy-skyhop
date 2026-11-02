@@ -536,19 +536,32 @@ export async function createRenderer(canvas) {
     const width = ready ? 190 : (b.width || 78);
     const naturalHeight = width * medy.naturalHeight / medy.naturalWidth;
     const height = ready ? naturalHeight : (b.height || naturalHeight);
-    const x = ready ? 210 : (b.x ?? 114);
-    const y = ready ? 378 + (reducedMotion ? 0 : Math.sin(clock * 2.25) * 7) : (b.y ?? 315);
-    const rotation = ready ? (reducedMotion ? 0 : Math.sin(clock * 1.7) * .035) : (b.rotation || 0);
+    // A continuous swooping flight, banking into each climb and dive.
+    // This is presentation only: the real flight always starts from engine coordinates.
+    const phase = clock * .85;
+    const x = ready ? 210 + (reducedMotion ? 0 : Math.sin(phase) * 35) : (b.x ?? 114);
+    const y = ready ? 374 + (reducedMotion ? 0 : Math.sin(phase * 2) * 25) : (b.y ?? 315);
+    const rotation = ready ? (reducedMotion ? -.06 : Math.cos(phase * 2) * .15 - .04) : (b.rotation || 0);
     if (ready) {
       // Hero halo and accompanying sparkles.
       const halo = ctx.createRadialGradient(x, y, 5, x, y, 131);
       halo.addColorStop(0, '#FFFFFF70'); halo.addColorStop(.72, '#FFFFFF25'); halo.addColorStop(1, '#FFFFFF00');
       ctx.fillStyle = halo; ctx.fillRect(x - 136, y - 136, 272, 272);
-      sparkle(x - 113, y - 28, 7, '#FFFFFF', .9);
-      sparkle(x + 94, y + 42, 6, '#F7BE00', .85);
-      sparkle(x + 60, y - 91, 4, '#FFFFFF', .8);
-      ctx.strokeStyle = '#FFFFFF87'; ctx.lineWidth = 2; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(x - 112, y + 30); ctx.lineTo(x - 88, y + 30); ctx.moveTo(x - 122, y + 40); ctx.lineTo(x - 96, y + 40); ctx.stroke();
+      if (!reducedMotion) {
+        // Wind ribbons drift backwards while Medy cruises above the city.
+        ctx.save(); ctx.lineCap = 'round';
+        for (let i = 0; i < 5; i++) {
+          const progress = wrap(clock * .7 + i / 5, 1);
+          const tailX = x - 62 - progress * 120;
+          const tailY = y + 12 + Math.sin(phase * 2 - progress * 2) * 18 + (i % 3 - 1) * 22;
+          ctx.globalAlpha = Math.sin(progress * Math.PI) * .65;
+          ctx.strokeStyle = i === 2 ? MEDSKY.gold : MEDSKY.white;
+          ctx.lineWidth = i === 2 ? 3 : 2;
+          ctx.beginPath();ctx.moveTo(tailX, tailY);
+          ctx.quadraticCurveTo(tailX - 15, tailY + 5, tailX - 32, tailY + 2);ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
     ctx.save(); ctx.translate(x, y); ctx.rotate(rotation);
     ctx.shadowColor = `${MEDSKY.navy}40`; ctx.shadowBlur = ready ? 14 : 4; ctx.shadowOffsetY = ready ? 10 : 3;
@@ -591,7 +604,7 @@ export async function createRenderer(canvas) {
     const over = ['over', 'gameover', 'ended'].includes(game.state);
     const step = clamp(Number(dt) || 0, 0, .05);
     if (!paused && !over) clock += step;
-    if (game.state === 'ready' && !reducedMotion) readyTravel += step * 13;
+    if (game.state === 'ready' && !reducedMotion) readyTravel += step * 65;
     if (lastState !== 'ready' && game.state === 'ready') particles = [];
     lastState = game.state;
     const travel = game.state === 'ready' ? readyTravel : (Number(game.distance) || 0);

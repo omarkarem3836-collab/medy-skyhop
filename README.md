@@ -17,3 +17,9 @@ Tap the flight area to flap. Scores and settings stay on the device/browser that
 ## Update
 
 Replace the static files together and bump `REVISION` in `sw.js` whenever the cached app files change. Installed updates wait until all game windows close so an active flight is not interrupted. All app references, manifest URLs, and service-worker scope are relative, supporting either a domain root or a GitHub Pages project path.
+
+## Expo competition on one Android screen
+
+Use https://play.medsky.aero/?expo=2026-11-03 on the stand screen. Enter a unique nickname or numbered ticket before playing. The highest gate score from a single completed flight is saved per player; retries do not add scores together. Equal scores share a rank. Use the same ticket to return to an existing player, and **Next player** to hand over the screen. Set the same number of attempts for everyone and supervise prize-winning flights.
+
+**Leaderboard → Export scores (CSV)** downloads the full ranked list, attempts, and timestamps. Keep backups during the event and at prize time. Scores are local to this browser, not synced or published online; use one tab and the same browser, keep the event URL unchanged, avoid private browsing and clearing site data. The ordinary installed app launches normal mode, so bookmark the full expo URL. Use a different expo query value for a separate event or rehearsal.
