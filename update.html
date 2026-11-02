@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#032BA6">
+  <meta name="robots" content="noindex">
+  <title>Update Medy Skyhop</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;min-height:100svh;display:grid;place-items:center;padding:24px;background:#032BA6;font-family:Arial,sans-serif;color:#111E6C}main{width:min(100%,440px);padding:36px 28px;background:#fff;border-radius:22px;box-shadow:0 20px 70px #111e6c50}small{font-weight:bold;font-size:11px;letter-spacing:2px;color:#032BA6}h1{font-size:30px;line-height:1.15;margin:18px 0}p{font-size:15px;line-height:1.7}button{border:0;min-height:54px;width:100%;border-radius:12px;background:#F7BE00;color:#111E6C;font:700 17px Arial,sans-serif;cursor:pointer;box-shadow:0 4px 0 #111E6C;margin:16px 0}button:disabled{opacity:.65;cursor:wait}button:focus-visible,a:focus-visible{outline:3px solid #032BA6;outline-offset:4px}a{display:block;color:#032BA6;text-align:center;padding:14px;font-size:14px}#update-status{min-height:26px;margin:8px 0 0}#update-status[data-error=true]{color:#9b241b}.saved{padding:14px;border-radius:10px;background:#E6EDF2;font-size:13px}
+  </style>
+</head>
+<body>
+  <main>
+    <small>MEDY SKYHOP</small>
+    <h1>Load the latest game.</h1>
+    <p>Finish any current flight, then update your saved copy of Medy Skyhop.</p>
+    <p class="saved">Your saved names, rankings and scores stay on this device.</p>
+    <button id="update-game" type="button">Update game</button>
+    <p id="update-status" role="status" aria-live="polite">Keep this page open while the update downloads.</p>
+    <a href="./">Back to the game</a>
+  </main>
+  <script type="module" src="./update.js"></script>
+</body>
+</html>

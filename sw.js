@@ -1,6 +1,6 @@
 // Bump this revision whenever any file in APP_SHELL changes. Each installed
 // worker serves one complete revision until its open game windows are closed.
-const REVISION = '2026-11-02-player-rankings-v12';
+const REVISION = '2026-11-02-manual-update-v13';
 const SCOPE = new URL(self.registration.scope);
 const ROOT_URL = SCOPE.href;
 const CACHE_PREFIX = `medy-skyhop:${SCOPE.pathname}:shell:`;
@@ -62,7 +62,17 @@ async function installShell() {
 
 self.addEventListener('install', event => {
   event.waitUntil(installShell());
-  // No skipWaiting: an update must never replace a game during a flight.
+  // Automatic updates wait for open games to close.
+});
+
+// Only the dedicated, user-initiated recovery page may activate an update now.
+// It is deliberately outside APP_SHELL so older workers cannot cache it.
+self.addEventListener('message', event => {
+  if (event.data?.type !== 'MEDY_UPDATE_NOW' || !event.source?.url) return;
+  const source = new URL(event.source.url);
+  const updater = new URL('./update.html', SCOPE);
+  if (source.origin !== updater.origin || source.pathname !== updater.pathname) return;
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener('activate', event => {

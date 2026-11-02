@@ -21,3 +21,5 @@ Replace the static files together and bump `REVISION` in `sw.js` whenever the ca
 ## Leaderboard
 
 The ordinary game at https://play.medsky.aero/ asks for a name before playing and automatically saves each player's best completed-flight gate score. Enter the same name to continue an existing ranking. **Fly again** keeps that player; **Home** allows another player to enter their name. Open **Leaderboard** on the home or results screen. Equal scores share a rank. Rankings are saved in this browser on this device, with no separate mode or special URL.
+
+If a phone still shows an older saved copy, open https://play.medsky.aero/update.html and tap **Update game** after finishing the current flight. Keep it open until the normal game returns. The updater preserves saved names and scores.
