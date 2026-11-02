@@ -1,0 +1,21 @@
+.ready-actions .open-leaderboard{display:flex;justify-content:center;margin:8px auto 0;min-height:42px;font-size:2.9cqw;color:var(--navy);pointer-events:auto;background:#ffffffe8;border-radius:20px;padding:8px 22px}
+.ranking-dialog{width:min(480px,calc(100vw - 32px));max-height:88svh;overflow:auto}
+.ranking-dialog label{display:block;font-size:14px;font-weight:bold;margin:24px 0 10px}
+.ranking-dialog input{width:100%;min-height:54px;border:2px solid var(--blue);border-radius:10px;padding:12px;font:inherit;font-size:20px;color:var(--navy);background:white}
+.ranking-dialog input:focus{outline:3px solid var(--gold);outline-offset:2px}
+.ranking-dialog .primary-button{width:100%;min-height:50px;margin-top:18px;font-size:16px}
+.ranking-dialog .cancel-player{display:flex;min-height:44px;margin:12px auto 0}
+.ranking-error{color:#9b241b!important}
+#player-error:empty{display:none}
+.leaderboard-table{max-height:46svh;overflow:auto;border:1px solid var(--line);border-radius:10px;margin:20px 0}
+.leaderboard-table table{width:100%;border-collapse:collapse;text-align:left}
+.leaderboard-table th{position:sticky;top:0;padding:12px;background:var(--blue);color:white;font-size:12px}
+.leaderboard-table td{padding:14px 12px;border-bottom:1px solid var(--line);font-size:15px;overflow-wrap:anywhere;max-width:220px}
+.leaderboard-table td:last-child,.leaderboard-table th:last-child{text-align:right;font-weight:bold}
+.leaderboard-first{background:var(--gold-tint);color:var(--navy);font-weight:bold}
+#leaderboard-empty{padding:8px 16px}
+.player-badge{position:absolute;top:14%;left:50%;transform:translateX(-50%);max-width:80%;border-radius:18px;background:#fffffff0;color:var(--navy);padding:6px 14px;font-size:2.6cqw;overflow-wrap:anywhere;text-align:center;pointer-events:none}
+.game-stage[data-state=over] .player-badge{display:none}
+.pass-content>.player-result{max-width:none;width:100%;font-size:3cqw;color:var(--blue);margin:10px 0 0;overflow-wrap:anywhere;line-height:1.5}
+.player-result:empty{display:none}
+.result-secondary .open-leaderboard{font-size:2.5cqw;min-height:40px}

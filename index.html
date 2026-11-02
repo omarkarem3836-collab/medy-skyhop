@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./destinations.css">
   <link rel="stylesheet" href="./install.css">
+  <link rel="stylesheet" href="./leaderboard.css">
 </head>
 <body>
   <svg class="symbols" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -68,6 +69,7 @@
           <div class="ready-actions">
             <button id="play-button" class="primary-button" disabled><span>Preparing your flight…</span><svg><use href="#i-arrow"/></svg></button>
             <p class="tap-hint">Five gates. A new city. Keep exploring.</p>
+            <button id="leaderboard-button" class="text-button open-leaderboard">Leaderboard</button>
           </div>
         </div>
         <div id="pause-screen" class="scrim" hidden>
@@ -78,6 +80,7 @@
         </div>
         <div id="loading-error" class="scrim" hidden><div class="pause-card"><h2>Flight delayed.</h2><p>The game couldn’t finish loading. Please refresh to try again.</p><button id="reload-button" class="primary-button">Try again</button></div></div>
         <span class="runway-caption" aria-hidden="true">THE SKY IS YOUR PLAYGROUND</span>
+        <span id="player-badge" class="player-badge" hidden></span>
       </div>
       <div class="under-frame"><span>MADE FOR A LITTLE ESCAPE</span><span>✦ &nbsp; FLY WITH MEDY</span></div>
     </section>
@@ -107,6 +110,26 @@
     <p class="install-browser-note">Opened from WhatsApp or another app? Use its menu to open the link in Safari or Chrome first.</p>
     <p id="offline-status" class="offline-status">Preparing offline play. Keep the game open with an internet connection for a moment.</p>
     <button id="done-install" class="text-button install-done">Back to the game <svg><use href="#i-arrow"/></svg></button>
+  </dialog>
+  <dialog id="player-dialog" class="ranking-dialog" aria-labelledby="player-title">
+    <form id="player-form">
+      <span class="eyebrow">YOUR NEXT FLIGHT</span>
+      <h2 id="player-title">What’s your name?</h2>
+      <label for="player-name">Your name</label>
+      <input id="player-name" name="player" placeholder="Type your name" maxlength="24" required autocomplete="off" dir="auto">
+      <p>Use the same name each time to keep your best score.</p>
+      <p id="player-error" class="ranking-error" role="status"></p>
+      <button class="primary-button" type="submit">Let’s fly <svg><use href="#i-arrow"/></svg></button>
+      <button id="cancel-player" class="text-button cancel-player" type="button">Back</button>
+    </form>
+  </dialog>
+  <dialog id="leaderboard-dialog" class="ranking-dialog" aria-labelledby="leaderboard-title">
+    <button id="close-leaderboard" class="icon-button dialog-close" aria-label="Close leaderboard"><svg><use href="#i-close"/></svg></button>
+    <span class="eyebrow">THE HIGHEST FLYERS</span>
+    <h2 id="leaderboard-title">Leaderboard</h2>
+    <div class="leaderboard-table"><table><thead><tr><th scope="col">Rank</th><th scope="col">Player</th><th scope="col">Gates</th></tr></thead><tbody id="leaderboard-rows"></tbody></table><p id="leaderboard-empty">Be the first name on the board.</p></div>
+    <p id="leaderboard-status" role="status"></p>
+    <button id="leaderboard-done" class="primary-button">Back to the game</button>
   </dialog>
   <script type="module" src="./app.js"></script>
 </body>

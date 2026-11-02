@@ -1,6 +1,6 @@
 // Bump this revision whenever any file in APP_SHELL changes. Each installed
 // worker serves one complete revision until its open game windows are closed.
-const REVISION = '2026-11-02-home-flight-v11';
+const REVISION = '2026-11-02-player-rankings-v12';
 const SCOPE = new URL(self.registration.scope);
 const ROOT_URL = SCOPE.href;
 const CACHE_PREFIX = `medy-skyhop:${SCOPE.pathname}:shell:`;
@@ -10,6 +10,9 @@ const APP_SHELL = [
   './styles.css',
   './destinations.css',
   './install.css',
+  './leaderboard.css',
+  './leaderboard.js',
+  './leaderboard-store.js',
   './app.js',
   './engine.js',
   './renderer.js',

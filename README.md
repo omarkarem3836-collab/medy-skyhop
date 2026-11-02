@@ -17,3 +17,7 @@ Tap the flight area to flap. Scores and settings stay on the device/browser that
 ## Update
 
 Replace the static files together and bump `REVISION` in `sw.js` whenever the cached app files change. Installed updates wait until all game windows close so an active flight is not interrupted. All app references, manifest URLs, and service-worker scope are relative, supporting either a domain root or a GitHub Pages project path.
+
+## Leaderboard
+
+The ordinary game at https://play.medsky.aero/ asks for a name before playing and automatically saves each player's best completed-flight gate score. Enter the same name to continue an existing ranking. **Fly again** keeps that player; **Home** allows another player to enter their name. Open **Leaderboard** on the home or results screen. Equal scores share a rank. Rankings are saved in this browser on this device, with no separate mode or special URL.
