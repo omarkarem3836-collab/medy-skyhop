@@ -109,16 +109,16 @@
     <div class="install-method"><h3>iPhone / iPad</h3><ol><li>Open this link in <b>Safari</b>.</li><li>Open the <b>Share</b> menu and choose <b>Add to Home Screen</b>.</li><li>Leave <b>Open as Web App</b> on if shown, then tap <b>Add</b>.</li></ol></div>
     <div class="install-method"><h3>Android</h3><p>Open this link in <b>Chrome</b>. Tap <b>Install on this device</b> above when available, or use Chrome’s menu → <b>Add to home screen</b> → <b>Install</b>.</p></div>
     <p class="install-browser-note">Opened from WhatsApp or another app? Use its menu to open the link in Safari or Chrome first.</p>
-    <p id="offline-status" class="offline-status">Preparing offline play. Keep the game open with an internet connection for a moment.</p>
+    <p id="offline-status" class="offline-status">Saving game files. Keep an internet connection to play and share your scores.</p>
     <button id="done-install" class="text-button install-done">Back to the game <svg><use href="#i-arrow"/></svg></button>
   </dialog>
   <dialog id="player-dialog" class="ranking-dialog" aria-labelledby="player-title">
     <form id="player-form">
       <span class="eyebrow">YOUR NEXT FLIGHT</span>
       <h2 id="player-title">What’s your name?</h2>
-      <label for="player-name">Your name</label>
+      <label for="player-name">Your name or nickname</label>
       <input id="player-name" name="player" placeholder="Type your name" maxlength="24" required autocomplete="off" dir="auto">
-      <p>Use the same name each time to keep your best score.</p>
+      <p>Your nickname and score appear on the shared leaderboard. Play again on this browser to keep your player identity.</p>
       <p id="player-error" class="ranking-error" role="status"></p>
       <button class="primary-button" type="submit">Let’s fly <svg><use href="#i-arrow"/></svg></button>
       <button id="cancel-player" class="text-button cancel-player" type="button">Back</button>

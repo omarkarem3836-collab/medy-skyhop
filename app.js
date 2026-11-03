@@ -3,6 +3,7 @@ import {createRenderer} from './renderer.js';
 import {DESTINATIONS, getJourney} from './destinations.js';
 import {setupInstall} from './install.js';
 import {setupLeaderboard} from './leaderboard.js';
+import {seededRandom} from './run-proof.js';
 
 const $ = id => document.getElementById(id);
 const stage = $('game-stage');
@@ -117,6 +118,7 @@ function performFlap() {
   unlockAudio();
   if (flap(game)) {
     if (starting) {ended=false;flightNumber++;record.flights++;saveRecord();renderRecords();$('share-status').textContent='';rankings.begin();}
+    else rankings.flap(game.time);
     sound('flap');renderer.burst(game.bird.x-17,game.bird.y+7,'flap');
     renderState();
   }
@@ -191,7 +193,7 @@ $('got-it-button').addEventListener('click',closeHelp);
 $('help-dialog').addEventListener('click',event=>{if(event.target===$('help-dialog')){const box=$('help-dialog').getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)closeHelp();}});
 $('reload-button').addEventListener('click',()=>location.reload());
 setupInstall({onOpen:pause});
-rankings=setupLeaderboard({onStart:()=>{performFlap();stage.focus({preventScroll:true});},onOpen:pause});
+rankings=setupLeaderboard({onStart:()=>{performFlap();stage.focus({preventScroll:true});},onOpen:pause,onSeed:seed=>{game._random=seededRandom(seed);}});
 $('share-button').addEventListener('click',async()=>{
   const sharedFlight=flightNumber;
   const shareStatus=message=>{if(game.state==='over'&&flightNumber===sharedFlight)$('share-status').textContent=message;};

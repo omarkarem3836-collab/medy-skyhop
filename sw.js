@@ -1,6 +1,6 @@
 // Bump this revision whenever any file in APP_SHELL changes. Each installed
 // worker serves one complete revision until its open game windows are closed.
-const REVISION = '2026-11-03-portrait-compat-v15';
+const REVISION = '2026-11-03-shared-leaderboard-v16';
 const SCOPE = new URL(self.registration.scope);
 const ROOT_URL = SCOPE.href;
 const CACHE_PREFIX = `medy-skyhop:${SCOPE.pathname}:shell:`;
@@ -13,6 +13,8 @@ const APP_SHELL = [
   './leaderboard.css',
   './portrait.css',
   './leaderboard.js',
+  './online-api.js',
+  './run-proof.js',
   './leaderboard-store.js',
   './app.js',
   './engine.js',
@@ -72,7 +74,8 @@ self.addEventListener('message', event => {
   if (event.data?.type !== 'MEDY_UPDATE_NOW' || !event.source?.url) return;
   const source = new URL(event.source.url);
   const updater = new URL('./update.html', SCOPE);
-  if (source.origin !== updater.origin || source.pathname !== updater.pathname) return;
+  const join = new URL('./play.html', SCOPE);
+  if (source.origin !== updater.origin || (source.pathname !== updater.pathname && source.pathname !== join.pathname)) return;
   event.waitUntil(self.skipWaiting());
 });
 

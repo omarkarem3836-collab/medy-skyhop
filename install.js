@@ -64,23 +64,23 @@ export function setupInstall({onOpen = () => {}} = {}) {
     const register = async () => {
       try {
         const registration = await navigator.serviceWorker.register('./sw.js', {scope:'./', updateViaCache:'none'});
-        const markReady = () => {offlineStatus.textContent = 'Ready for offline play on this browser. Your device may clear saved game files if storage is needed.';};
+        const markReady = () => {offlineStatus.textContent = 'Game files saved. An internet connection is needed to start flights and share your scores.';};
         if (registration.active) markReady();
         else {
           const worker = registration.installing || registration.waiting;
           worker?.addEventListener('statechange', () => {
             if (worker.state === 'activated') markReady();
-            if (worker.state === 'redundant') offlineStatus.textContent = 'Offline setup could not finish. Reopen the game with an internet connection to try again.';
+            if (worker.state === 'redundant') offlineStatus.textContent = 'Saving game files could not finish. Reopen the game with an internet connection to try again.';
           });
           if (worker?.state === 'activated') markReady();
         }
       } catch {
-        offlineStatus.textContent = 'This browser could not save the game for offline play. You can still play with an internet connection.';
+        offlineStatus.textContent = 'This browser could not save the game files. You can still play with an internet connection.';
       }
     };
     if (document.readyState === 'complete') void register();
     else window.addEventListener('load', register, {once:true});
   } else {
-    offlineStatus.textContent = 'Offline saving isn’t available in this browser. Play with an internet connection.';
+    offlineStatus.textContent = 'Play with an internet connection to share your scores.';
   }
 }
