@@ -1,0 +1,82 @@
+/* Large portrait screens use the same game, fitted to the available display. */
+@media (min-width: 641px) and (orientation: portrait) {
+  :root {
+    --portrait-unit: clamp(1px, .16vw, 3px);
+    --portrait-header: calc(64 * var(--portrait-unit) + env(safe-area-inset-top, 0px));
+  }
+  body { background: var(--navy); min-height: 100svh; }
+  .site-header {
+    height: var(--portrait-header);
+    padding: env(safe-area-inset-top, 0px) calc(20 * var(--portrait-unit)) 0;
+  }
+  .brand img { width: calc(129 * var(--portrait-unit)); }
+  .header-caption, .intro-panel, .record-panel, .frame-label, .under-frame, .site-footer { display: none; }
+  .header-actions { gap: calc(12 * var(--portrait-unit)); }
+  .header-actions .text-button { font-size: calc(12 * var(--portrait-unit)); padding: calc(8 * var(--portrait-unit)); }
+  .header-actions .icon-button { width: calc(42 * var(--portrait-unit)); height: calc(42 * var(--portrait-unit)); padding: calc(10 * var(--portrait-unit)); }
+  .header-actions svg { width: 100%; height: 100%; }
+  .help-mark { display: none; }
+  .flight-deck { display: block; margin: 0; padding: 0; max-width: none; }
+  .game-column {
+    width: 100%; min-width: 0; display: flex; align-items: center; justify-content: center;
+    min-height: calc(100svh - var(--portrait-header) - env(safe-area-inset-bottom, 0px));
+    background: var(--airforce);
+  }
+  .game-stage {
+    width: min(100vw, calc((100svh - var(--portrait-header) - env(safe-area-inset-bottom, 0px)) * .55263158));
+    min-width: 0; max-width: none; border: 0; border-radius: 0; box-shadow: none; margin: 0;
+  }
+  .game-title h2 { margin: 5.2cqw 0 3.1cqw; }
+  .game-title .pill { padding: 1.2cqw 2.9cqw; border-radius: 5cqw; }
+  .ready-best { padding: 1.7cqw 1cqw; border-radius: 5cqw; }
+  .primary-button { border-radius: 3cqw; }
+  .ready-actions .primary-button svg { width: 5.2cqw; height: 5.2cqw; }
+  .ready-actions .open-leaderboard { margin-top: 1.9cqw; padding: 1.9cqw 5.2cqw; min-height: 10cqw; border-radius: 5cqw; }
+  .hud { gap: 2.4cqw; }
+  .hud-score { min-width: 17cqw; padding: 2.1cqw 4cqw; border-radius: 3.3cqw; }
+  .hud-score strong { font-size: 7.6cqw; }
+  .hud-score small { font-size: 1.9cqw; }
+  .hud-score .speed-label { padding-top: 1cqw; }
+  .hud-coins { gap: 1.4cqw; border-radius: 7cqw; padding: 1.7cqw 2.9cqw; font-size: 3.8cqw; }
+  .hud-coins svg { width: 5cqw; height: 5cqw; }
+  .hud > .icon-button { width: 10cqw; height: 10cqw; padding: 2.4cqw; }
+  .hud > .icon-button svg { width: 100%; height: 100%; }
+  .destination-hud { border-radius: 1.9cqw; padding: 1.4cqw 2.1cqw; }
+  .player-badge { padding: 1.4cqw 3.3cqw; border-radius: 4.3cqw; }
+  .boarding-pass, .pause-card { border-radius: 4.3cqw; }
+  .pass-header { padding: 3.6cqw 5.5cqw; }
+  .pass-header svg, .coin-receipt svg { width: 4.8cqw; height: 4.8cqw; }
+  .pass-content { padding: 5.7cqw 5.5cqw 4cqw; }
+  .pass-content h2 { margin: 3.3cqw 0 1.9cqw; }
+  .pass-content > p { max-width: 58cqw; }
+  .result-scores { margin: 6cqw 0 4.5cqw; }
+  .coin-receipt { gap: 1.9cqw; border-radius: 1.9cqw; padding: 2.4cqw; }
+  .pass-content > .player-result { margin: 2.4cqw 0 0; }
+  .pass-content > .result-destination { margin-top: 2.6cqw; }
+  .pass-actions { padding: 5.2cqw; }
+  .pass-actions .primary-button { min-height: 11.4cqw; padding: 3.6cqw 4.3cqw; }
+  .pass-actions .primary-button svg { width: 5.2cqw; height: 5.2cqw; }
+  .result-secondary { padding-top: 2.9cqw; }
+  .result-secondary .text-button { min-height: 10cqw; padding: 1.9cqw 0; gap: 1.9cqw; }
+  .result-secondary svg { width: 3.3cqw; height: 3.3cqw; }
+  .pause-card { padding: 7.6cqw 6cqw; }
+  .pause-card .eyebrow { font-size: 2.1cqw; }
+  .pause-card p { font-size: 2.9cqw; margin-bottom: 5.7cqw; }
+  .pause-card .primary-button, .pause-card > .text-button { font-size: 3.3cqw; min-height: 12cqw; padding: 3cqw; }
+  dialog, #install-dialog, .ranking-dialog {
+    width: min(88vw, calc(480 * var(--portrait-unit)));
+    max-height: 88svh; overflow: auto; padding: calc(38 * var(--portrait-unit)) calc(30 * var(--portrait-unit));
+    border-radius: calc(20 * var(--portrait-unit));
+  }
+  dialog h2, .install-heading h2 { font-size: calc(26 * var(--portrait-unit)); }
+  dialog p, dialog li, .install-browser-note, .offline-status { font-size: calc(14 * var(--portrait-unit)); }
+  dialog .eyebrow, .install-heading .eyebrow { font-size: calc(10 * var(--portrait-unit)); }
+  dialog .primary-button, dialog .text-button { font-size: calc(16 * var(--portrait-unit)); min-height: calc(50 * var(--portrait-unit)); border-radius: calc(12 * var(--portrait-unit)); }
+  dialog .dialog-close { width: calc(40 * var(--portrait-unit)); height: calc(40 * var(--portrait-unit)); }
+  dialog .dialog-close svg { width: 100%; height: 100%; }
+  .ranking-dialog label { font-size: calc(16 * var(--portrait-unit)); }
+  .ranking-dialog input { font-size: calc(24 * var(--portrait-unit)); min-height: calc(58 * var(--portrait-unit)); padding: calc(12 * var(--portrait-unit)); }
+  .leaderboard-table th { font-size: calc(14 * var(--portrait-unit)); padding: calc(12 * var(--portrait-unit)); }
+  .leaderboard-table td { font-size: calc(20 * var(--portrait-unit)); padding: calc(14 * var(--portrait-unit)); max-width: none; }
+  .install-method h3 { font-size: calc(18 * var(--portrait-unit)); }
+}
