@@ -1,10 +1,12 @@
 /* Large portrait screens use the same game, fitted to the available display. */
 @media (min-width: 641px) and (orientation: portrait) {
   :root {
+    /* Older Android WebViews do not understand svh. Keep a valid fallback. */
+    --portrait-viewport-height: 100vh;
     --portrait-unit: clamp(1px, .16vw, 3px);
     --portrait-header: calc(64 * var(--portrait-unit) + env(safe-area-inset-top, 0px));
   }
-  body { background: var(--navy); min-height: 100svh; }
+  body { background: var(--navy); min-height: var(--portrait-viewport-height); }
   .site-header {
     height: var(--portrait-header);
     padding: env(safe-area-inset-top, 0px) calc(20 * var(--portrait-unit)) 0;
@@ -19,12 +21,13 @@
   .flight-deck { display: block; margin: 0; padding: 0; max-width: none; }
   .game-column {
     width: 100%; min-width: 0; display: flex; align-items: center; justify-content: center;
-    min-height: calc(100svh - var(--portrait-header) - env(safe-area-inset-bottom, 0px));
+    min-height: calc(var(--portrait-viewport-height) - var(--portrait-header) - env(safe-area-inset-bottom, 0px));
     background: var(--airforce);
   }
   .game-stage {
-    width: min(100vw, calc((100svh - var(--portrait-header) - env(safe-area-inset-bottom, 0px)) * .55263158));
-    min-width: 0; max-width: none; border: 0; border-radius: 0; box-shadow: none; margin: 0;
+    width: min(100vw, calc((var(--portrait-viewport-height) - var(--portrait-header) - env(safe-area-inset-bottom, 0px)) * .55263158));
+    height: min(calc(100vw * 1.80952381), calc(var(--portrait-viewport-height) - var(--portrait-header) - env(safe-area-inset-bottom, 0px)));
+    flex: none; min-width: 0; max-width: none; border: 0; border-radius: 0; box-shadow: none; margin: 0;
   }
   .game-title h2 { margin: 5.2cqw 0 3.1cqw; }
   .game-title .pill { padding: 1.2cqw 2.9cqw; border-radius: 5cqw; }
@@ -65,7 +68,7 @@
   .pause-card .primary-button, .pause-card > .text-button { font-size: 3.3cqw; min-height: 12cqw; padding: 3cqw; }
   dialog, #install-dialog, .ranking-dialog {
     width: min(88vw, calc(480 * var(--portrait-unit)));
-    max-height: 88svh; overflow: auto; padding: calc(38 * var(--portrait-unit)) calc(30 * var(--portrait-unit));
+    max-height: calc(var(--portrait-viewport-height) * .88); overflow: auto; padding: calc(38 * var(--portrait-unit)) calc(30 * var(--portrait-unit));
     border-radius: calc(20 * var(--portrait-unit));
   }
   dialog h2, .install-heading h2 { font-size: calc(26 * var(--portrait-unit)); }
@@ -79,4 +82,12 @@
   .leaderboard-table th { font-size: calc(14 * var(--portrait-unit)); padding: calc(12 * var(--portrait-unit)); }
   .leaderboard-table td { font-size: calc(20 * var(--portrait-unit)); padding: calc(14 * var(--portrait-unit)); max-width: none; }
   .install-method h3 { font-size: calc(18 * var(--portrait-unit)); }
+}
+
+/* Upgrade only after support is confirmed; an unsupported custom-property
+   value would otherwise invalidate every game-size calculation at once. */
+@supports (height: 100svh) {
+  @media (min-width: 641px) and (orientation: portrait) {
+    :root { --portrait-viewport-height: 100svh; }
+  }
 }
