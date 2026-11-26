@@ -29,7 +29,7 @@ export async function refreshInstallation(container, report=()=>{}) {
     await waitForWorker(worker,['activated']);
   }
   await waitForController(container,worker);
-  report('Updated. Opening the game…');
+  report('Updated. Opening Medy Skyhop…');
 }
 
 if(typeof document!=='undefined') {
@@ -40,7 +40,9 @@ if(typeof document!=='undefined') {
     try {
       if(!('serviceWorker' in navigator))throw new Error('Open this link in Safari or Chrome to update the saved game.');
       await refreshInstallation(navigator.serviceWorker,message=>{status.textContent=message;});
-      location.replace(new URL('./game.html',location.href).href);
+      // The QR join link opens the game; recovering the screen opens the QR home.
+      const target=new URL(location.href).pathname.endsWith('/play.html')?'./game.html':'./';
+      location.replace(new URL(target,location.href).href);
     }catch(error){
       status.textContent=error.message||'The update could not finish. Please check your connection and try again.';
       status.dataset.error='true';button.disabled=false;button.textContent='Try update again';
