@@ -4,7 +4,7 @@
   "short_name": "Medy Skyhop",
   "description": "A little tap. A big Medsky adventure. Fly with Medy through seven cities.",
   "lang": "en",
-  "start_url": "./",
+  "start_url": "./game.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",

@@ -40,7 +40,7 @@ if(typeof document!=='undefined') {
     try {
       if(!('serviceWorker' in navigator))throw new Error('Open this link in Safari or Chrome to update the saved game.');
       await refreshInstallation(navigator.serviceWorker,message=>{status.textContent=message;});
-      location.replace(new URL('./',location.href).href);
+      location.replace(new URL('./game.html',location.href).href);
     }catch(error){
       status.textContent=error.message||'The update could not finish. Please check your connection and try again.';
       status.dataset.error='true';button.disabled=false;button.textContent='Try update again';

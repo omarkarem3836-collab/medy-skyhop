@@ -199,7 +199,7 @@ $('share-button').addEventListener('click',async()=>{
   const shareStatus=message=>{if(game.state==='over'&&flightNumber===sharedFlight)$('share-status').textContent=message;};
   $('share-status').textContent='';
   const text=`I cleared ${game.score} gates with Medy, flying over ${getJourney(game.score,game.startDestination).destination.name}! Can you beat my flight?`;
-  const url=new URL('./',location.href).href;
+  const url=new URL('./play.html',location.href).href;
   try {
     if(navigator.share) await navigator.share({title:'Medy Skyhop',text,url});
     else if(navigator.clipboard){await navigator.clipboard.writeText(`${text}\n${url}`);shareStatus('Score and game link copied.');}

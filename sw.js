@@ -1,12 +1,13 @@
 // Bump this revision whenever any file in APP_SHELL changes. Each installed
 // worker serves one complete revision until its open game windows are closed.
-const REVISION = '2026-11-03-shared-leaderboard-v16';
+const REVISION = '2026-11-26-qr-home-v17';
 const SCOPE = new URL(self.registration.scope);
 const ROOT_URL = SCOPE.href;
+const GAME_URL = new URL('./game.html', SCOPE).href;
 const CACHE_PREFIX = `medy-skyhop:${SCOPE.pathname}:shell:`;
 const CACHE_NAME = `${CACHE_PREFIX}${REVISION}`;
 const APP_SHELL = [
-  './',
+  './game.html',
   './styles.css',
   './destinations.css',
   './install.css',
@@ -36,7 +37,6 @@ const APP_SHELL = [
   './assets/apple-touch-icon.png',
 ].map(path => new URL(path, SCOPE).href);
 const SHELL_URLS = new Set(APP_SHELL);
-const INDEX_URL = new URL('./index.html', SCOPE).href;
 
 async function installShell() {
   // Fetch the whole revision before storing it. Redirects must fail rather
@@ -47,7 +47,7 @@ async function installShell() {
     }));
     const isHTML = (response.headers.get('content-type') || '').includes('text/html');
     if (!response.ok || response.redirected || response.type === 'opaque' ||
-        (url !== ROOT_URL && isHTML)) {
+        (url !== GAME_URL && isHTML)) {
       throw new Error(`The game could not be saved for offline play: ${new URL(url).pathname}`);
     }
     return [url, response];
@@ -63,9 +63,26 @@ async function installShell() {
   }
 }
 
+async function hasLegacyGameHome() {
+  try {
+    for (const name of await caches.keys()) {
+      if (!name.startsWith(CACHE_PREFIX) || name === CACHE_NAME) continue;
+      const saved = await (await caches.open(name)).match(ROOT_URL);
+      if (saved && (await saved.text()).includes('id="game-stage"')) return true;
+    }
+  } catch { /* Storage may be unavailable; ordinary update rules still apply. */ }
+  return false;
+}
+
 self.addEventListener('install', event => {
-  event.waitUntil(installShell());
-  // Automatic updates wait for open games to close.
+  event.waitUntil((async () => {
+    const migrateHome = await hasLegacyGameHome();
+    await installShell();
+    // This compatible routing migration releases the old cached home page.
+    // Claiming clients does not reload or navigate an existing flight.
+    if (migrateHome) await self.skipWaiting();
+  })());
+  // Later game updates still wait for open games to close or a user update.
 });
 
 // Only the dedicated, user-initiated recovery page may activate an update now.
@@ -104,13 +121,13 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== SCOPE.origin) return;
 
-  // Only the app's two document URLs and its exact static file list belong to
-  // this worker. Authentication, API routes and unknown paths stay untouched.
+  // Only the game document and its exact static file list belong to this worker.
+  // The QR home, leaderboard, authentication and API routes stay on the network.
   const canonicalURL = `${url.origin}${url.pathname}`;
-  const isDocument = canonicalURL === ROOT_URL || canonicalURL === INDEX_URL;
+  const isDocument = canonicalURL === GAME_URL;
   if (event.request.mode === 'navigate') {
     if (!isDocument) return;
-    event.respondWith(shellResponse(event.request, ROOT_URL));
+    event.respondWith(shellResponse(event.request, GAME_URL));
   } else if (SHELL_URLS.has(canonicalURL)) {
     event.respondWith(shellResponse(event.request, canonicalURL));
   }
